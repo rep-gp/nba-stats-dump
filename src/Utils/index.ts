@@ -9,6 +9,9 @@ export const changeObjectKeys = (object: any) => {
     keys.map(old_key => {
         const new_key = titleToSnakeCase(old_key)
 
+        if (object[old_key] && (typeof object[old_key] === 'object')) /* If the value are a object too */
+            changeObjectKeys(object[old_key])
+
         Object.defineProperty(object, new_key, Object.getOwnPropertyDescriptor(object, old_key));
         delete object[old_key];
     })
