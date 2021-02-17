@@ -1,5 +1,5 @@
 {
-  "name": "nba-stast-api",
+  "name": "nba-stast-dump",
   "version": "1.0.0",
   "main": "index.ts",
   "license": "MIT",
