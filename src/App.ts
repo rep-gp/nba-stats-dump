@@ -7,29 +7,32 @@ export default class App {
     static season: string
     static routes = [
         { name: 'players', method: () => PlayerService.getPlayers() },
-        { name: 'playersStats', method: (season: string) => PlayerService.getPlayersStats(season) },
+        { name: 'player_stats', method: (season: string) => PlayerService.getPlayersStats(season) },
         { name: 'teams', method: () => TeamService.getTeams() },
-        { name: 'teamsStats', method: (season: string) => TeamService.getTeamsStats(season) }
+        { name: 'team_stats', method: (season: string) => TeamService.getTeamsStats(season) }
     ]
     data: any
 
-    constructor (season: string) {
+    constructor(season: string) {
         App.season = season
     }
 
-    async dumpToDatabase () {
+    async dumpToDatabase() {
         Database.dumpFromFile(process.argv[2])
     }
 
-    fetchRoutes () {
+    async fetchRoutes() {
         this.data = {}
 
-        App.routes.map(async (route) => {
+        await Promise.all(App.routes.map(async (route) => {
             const responseObj = await route.method(App.season)
             this.data[route.name] = responseObj.map((el: any) => changeObjectKeys(el))
+        }))
 
-            if (this.data.teamsStats) console.log(this.data.teamsStats[1])
-        })
+        // for (const key in this.data) {
+        //     await Database.insertRows(key, this.data[key])
+        // }
 
+        await Database.insertRows('player_stats', this.data['player_stats'])
     }
 }
